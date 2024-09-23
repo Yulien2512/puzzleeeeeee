@@ -39,8 +39,8 @@ public class Tile {
     public void setXY(int x, int y) {
         this.x = x;
         this.y = y;
-        tile.moveHorizontal(x * 50);
-        tile.moveVertical(y * 50);
+        tile.moveVertical(x * 50);
+        tile.moveHorizontal(y * 50);
     }
 
     public void addGlue(Tile[][] board) {

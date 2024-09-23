@@ -9,6 +9,7 @@ public class Puzzle {
     private Tile[][] board;
     private Tile[][] lastBoard;
     private String[] order;
+    private boolean[][] hole;
 
     /**
      * Constructor de la clase Puzzle.
@@ -19,6 +20,7 @@ public class Puzzle {
         this.width = width;
         this.board = new Tile[height][width];
         this.lastBoard = new Tile[height][width];
+        this.hole = new boolean[height][width];
         createBoards();
     }
 
@@ -47,17 +49,17 @@ public class Puzzle {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 // Mostrar fichas del tablero principal
-                if (board[j][i] != null) {
-                    board[j][i].makeVisible();
+                if (board[i][j] != null) {
+                    board[i][j].makeVisible();
                 } else {
-                    board[j][i] = null;
+                    board[i][j] = null;
                 }
 
                 // Mostrar fichas del último tablero
-                if (lastBoard[j][i] != null) {
-                    lastBoard[j][i].makeVisible();
+                if (lastBoard[i][j] != null) {
+                    lastBoard[i][j].makeVisible();
                 } else {
-                    lastBoard[j][i] = null;
+                    lastBoard[i][j] = null;
                 }
             }
         }
@@ -74,27 +76,27 @@ public class Puzzle {
                 // Configuración del tablero principal (board)
                 switch (c) {
                     case 'r':
-                        lastBoard[j][i] = new Tile("red");
+                        lastBoard[i][j] = new Tile("red");
                         break;
                     case 'b':
-                        lastBoard[j][i] = new Tile("blue");
+                        lastBoard[i][j] = new Tile("blue");
                         break;
                     case 'g':
-                        lastBoard[j][i] = new Tile("green");
+                        lastBoard[i][j] = new Tile("green");
                         break;
                     case 'y':
-                        lastBoard[j][i] = new Tile("yellow");
+                        lastBoard[i][j] = new Tile("yellow");
                         break;
                     case '.':
-                        lastBoard[j][i] = null; // Espacio vacío
+                        lastBoard[i][j] = null; // Espacio vacío
                         break;
                     default:
                         throw new IllegalArgumentException("Carácter no reconocido: " + c);
                 }
 
-                if (lastBoard[j][i] != null) {
-                    lastBoard[j][i].setXY(j, i); // Coordenadas para lastBoard
-                    lastBoard[j][i].moveHorizontal(500); // Desplazar el segundo tablero
+                if (lastBoard[i][j] != null) {
+                    lastBoard[i][j].setXY(j, i); // Coordenadas para lastBoard
+                    lastBoard[i][j].moveHorizontal(500); // Desplazar el segundo tablero
                 }
             }
         }
@@ -112,26 +114,26 @@ public class Puzzle {
                 // Configuración del tablero principal (board)
                 switch (c) {
                     case 'r':
-                        board[j][i] = new Tile("red");
+                        board[i][j] = new Tile("red");
                         break;
                     case 'b':
-                        board[j][i] = new Tile("blue");
+                        board[i][j] = new Tile("blue");
                         break;
                     case 'g':
-                        board[j][i] = new Tile("green");
+                        board[i][j] = new Tile("green");
                         break;
                     case 'y':
-                        board[j][i] = new Tile("yellow");
+                        board[i][j] = new Tile("yellow");
                         break;
                     case '.':
-                        board[j][i] = null; // Espacio vacío
+                        board[i][j] = null; // Espacio vacío
                         break;
                     default:
                         throw new IllegalArgumentException("Carácter no reconocido: " + c);
                 }
 
-                if (board[j][i] != null) {
-                    board[j][i].setXY(j, i); // Coordenadas para lastBoard
+                if (board[i][j] != null) {
+                    board[i][j].setXY(i, j); // Coordenadas para lastBoard
                 }
             }
         }
@@ -186,14 +188,14 @@ public class Puzzle {
         int tempF = 0;
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                board[j][i] = tiles.get(temp++);
-                lastBoard[j][i] = tilesFinal.get(tempF++);
-                if (board[j][i] != null) {
-                    board[j][i].setXY(i, j);
+                board[i][j] = tiles.get(temp++);
+                lastBoard[i][j] = tilesFinal.get(tempF++);
+                if (board[i][j] != null) {
+                    board[i][j].setXY(i, j);
                 }
-                if (lastBoard[j][i] != null) {
-                    lastBoard[j][i].setXY(i, j);
-                    lastBoard[j][i].moveHorizontal(500);
+                if (lastBoard[i][j] != null) {
+                    lastBoard[i][j].setXY(i, j);
+                    lastBoard[i][j].moveHorizontal(500);
                 }
             }
         }
@@ -226,9 +228,9 @@ public class Puzzle {
         this.board = new Tile[height][width];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                board[j][i] = tiles.get(temp++);
-                if (board[j][i] != null) {
-                    board[j][i].setXY(j, i); // Coordenadas para el tablero principal
+                board[i][j] = tiles.get(temp++);
+                if (board[i][j] != null) {
+                    board[i][j].setXY(i, j); // Coordenadas para el tablero principal
                 }
             }
         }
@@ -249,8 +251,7 @@ public class Puzzle {
     }
 
     public void addTile(int row, int column,String color){
-        Puzzle puzzle = new Puzzle(height, width);
-        if (row >= 0 && row < puzzle.getHeight() && column >= 0 && column < puzzle.getWidth()) {
+        if (row >= 0 && row < height && column >= 0 && column < width) {
             // Crear una nueva ficha (Tile) con el color dado
             Tile newTile = new Tile(color);
 
@@ -258,7 +259,7 @@ public class Puzzle {
             newTile.setXY(row, column);
 
             // Añadir la ficha al tablero
-            puzzle.setTile(row, column, newTile);
+            setTile(row, column, newTile);
 
             // Hacer visible la nueva ficha en la interfaz gráfica
             newTile.makeVisible();
@@ -272,7 +273,7 @@ public class Puzzle {
         if (row >= 0 && row < height && column >= 0 && column < width) {
             Tile tile = getTile(row, column);
             if (tile != null) {
-                board[column][row] = null;// Eliminar la ficha del tablero
+                board[row][column] = null;// Eliminar la ficha del tablero
                 tile.makeInvisible();
             }
         }
@@ -283,15 +284,14 @@ public class Puzzle {
                 newRow >= 0 && newRow < height && newColumn >= 0 && newColumn < width) {
 
             Tile tile = getTile(oldRow, oldColumn);
-
-            if (tile != null && board[newColumn][newRow] == null) {
+            if (tile != null && board[newRow][newColumn] == null) {
                 // Mover la ficha al nuevo lugar en el tablero
                 deleteTile(oldRow,oldColumn);
                 String color = tile.getColor();
                 addTile(newRow,newColumn,color);
 
                 // Actualizar la posición gráfica de la ficha
-                tile.setXY(newRow, newColumn);
+                // tile.setXY(newRow, newColumn);
             }
         }
     }
@@ -309,8 +309,8 @@ public class Puzzle {
                 }
                 break;
             case 'd': // Mover hacia abajo
-                for (int col = 0; col < width; col++) {
-                    for (int row = height - 2; row >= 0; row--) {
+                for (int row = height-1; row >= 0; row--) {
+                    for (int col = 0; col < width; col++) {
                         Tile tile = getTile(row, col);
                         if (tile != null) {
                             moveTileDown(row, col); // Mueve ficha hacia abajo si es posible
@@ -319,8 +319,8 @@ public class Puzzle {
                 }
                 break;
             case 'l': // Mover hacia la izquierda
-                for (int row = 0; row < height; row++) {
-                    for (int col = 1; col < width; col++) {
+                for (int col = 0; col < width; col++) {
+                    for (int row = 0; row < height; row++) {
                         Tile tile = getTile(row, col);
                         if (tile != null) {
                             moveTileLeft(row, col); // Mueve ficha hacia la izquierda si es posible
@@ -329,11 +329,11 @@ public class Puzzle {
                 }
                 break;
             case 'r': // Mover hacia la derecha
-                for (int row = 0; row < height; row++) {
-                    for (int col = width - 2; col >= 0; col--) {
+                for (int col = width-1; col >= 0; col--) {
+                    for (int row = 0; row < height; row++) {
                         Tile tile = getTile(row, col);
                         if (tile != null) {
-                            moveTileRight(row, col); // Mueve ficha hacia la derecha si es posible
+                            moveTileRight(row, col); // Mueve ficha hacia la izquierda si es posible
                         }
                     }
                 }
@@ -344,13 +344,17 @@ public class Puzzle {
     }
 
     private void moveTileUp(int fila, int columna) {
-        for (int i = fila;i >= 0;i--){
-            if (i - 1 == -1){
+        for (int i = fila-1;i >= 0;i--){
+            if (hole[i][columna]) {
+                deleteTile(fila, columna);
+                break;
+            }
+            if (i == 0){
                 relocateTile(fila, columna, i, columna);
                 break;
             }
             Tile tile = getTile(i-1, columna);
-            if (tile != null) {
+            if (tile != null && !hole[i-1][columna]) {
                 relocateTile(fila, columna, i, columna);
                 break;
             }
@@ -358,27 +362,70 @@ public class Puzzle {
         }
     }
 
-    private void moveTileDown(int row, int col) {
-        while (row < height - 1 && board[row + 1][col] == null) {
-            relocateTile(col, row, col, row + 1);
-            row++; // Actualizamos la posición de la ficha
+    private void moveTileDown(int fila, int columna) {
+        for (int i = fila+1;i < height;i++){
+            if (hole[i][columna]) {
+                deleteTile(fila, columna);
+                break;
+            }
+            if (i == height-1){
+                relocateTile(fila, columna, i, columna);
+                break;
+            }
+            Tile tile = getTile(i+1, columna);
+            if (tile != null && !hole[i+1][columna]) {
+                relocateTile(fila, columna, i, columna);
+                break;
+            }
         }
     }
 
     private void moveTileLeft(int row, int col) {
-        while (col > 0 && board[row][col - 1] == null) {
-            relocateTile(col, row, col - 1, row);
-            col--; // Actualizamos la posición de la ficha
+        for (int j = col-1; j >= 0; j--) {
+            if (hole[row][j]) {
+                deleteTile(row, col);
+                break;
+            }
+            if (j == 0) {
+                relocateTile(row, col, row, j);
+                break;
+            }
+            Tile tile = getTile(row, j-1);
+            if (tile != null && !hole[row][j-1]) {
+                relocateTile(row, col, row, j);
+                break;
+            }
         }
     }
 
     private void moveTileRight(int row, int col) {
-        while (col < width - 1 && board[row][col + 1] == null) {
-            relocateTile(col, row, col + 1, row);
-            col++; // Actualizamos la posición de la ficha
+        for (int j = col+1; j < width; j++) {
+            if (hole[row][j]) {
+                deleteTile(row, col);
+                break;
+            }
+            if (j == width-1) {
+                relocateTile(row, col, row, j);
+                break;
+            }
+            Tile tile = getTile(row, j+1);
+            if (tile != null && !hole[row][j+1]) {
+                relocateTile(row, col, row, j);
+                break;
+            }
         }
     }
 
+
+    public void makeHole(int row, int col) {
+        if (row > height || row < 0 || col > width || col < 0 || hole[row][col]) return;
+        hole[row][col] = true;
+        Tile tile = getTile(row, col);
+        if (tile != null) {
+            deleteTile(row, col);
+        }
+        addTile(row, col, "white");
+    }
 
 
     /**
@@ -386,15 +433,14 @@ public class Puzzle {
      */
     public void addGlue(int x, int y) {
         if (x >= 0 && x < height && y >= 0 && y < width) {
-            if (board[y][x] != null) {
-                board[y][x].addGlue(board);
+            if (board[x][y] != null) {
+                board[x][y].addGlue(board);
             }
         }
     }
 
     public Tile getTile(int x, int y) {
         if (x >= 0 && x < height && y >= 0 && y < width) {
-            System.out.println(board[x][y].getColor());
             return board[x][y];
         }
         return null;
